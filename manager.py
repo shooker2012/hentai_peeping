@@ -154,8 +154,18 @@ class HentaiDownloadManager:
 
 
 if __name__ == "__main__":
-    # test_url = "http://g.e-hentai.org/g/849492/eda7c42b07/" 
-    test_url = "http://g.e-hentai.org/g/852086/a23483a313/" 
+    import sys
+    if len( sys.argv ) < 2:
+        # test_url = "http://g.e-hentai.org/g/849492/eda7c42b07/" 
+        test_url = "http://g.e-hentai.org/g/852086/a23483a313/" 
+    else:
+        test_url = sys.argv[1]
+
+    if len( sys.argv ) < 3:
+        save_folder = "download"
+    else:
+        save_folder = sys.argv[2]
+
     manager = HentaiDownloadManager()
 
-    manager.download( test_url, "download" )
+    manager.download( test_url, save_folder )
