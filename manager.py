@@ -28,7 +28,7 @@ class HentaiDownloadManager:
         self.session = HentaiSession( )
         self.session.load_from_file( )
 
-        self.sleep_time = 0.5
+        self.sleep_time = 0.3
 
     def _check_finished( self, save_folder, urls ):
         """check if which images are always downloaded, and remove them from download list.
@@ -156,8 +156,8 @@ class HentaiDownloadManager:
 if __name__ == "__main__":
     import sys
     if len( sys.argv ) < 2:
-        # test_url = "http://g.e-hentai.org/g/849492/eda7c42b07/" 
-        test_url = "http://g.e-hentai.org/g/852086/a23483a313/" 
+        # test_url = "http://g.e-hentai.org/g/852086/a23483a313/" 
+        test_url = "http://exhentai.org/g/852726/3e25b3069b/" 
     else:
         test_url = sys.argv[1]
 

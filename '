@@ -1,0 +1,153 @@
+import shelve
+import time
+import os
+
+from hentai_session import HentaiSession
+from gallery import EHentaiGallery
+from page import EHentaiPage
+
+
+DATA_FILE_NAME = "hentai_data"
+
+class HentaiDownloadManager:
+    """
+    HentaiDownloadManager's description.
+    """
+
+    def __init__( self ):
+        """__init__
+    
+        Args: None
+
+        Returns:
+    
+        Raises:
+        """
+
+        self.session = HentaiSession( )
+        self.session.load_from_file( )
+
+        self.sleep_time = 0.5
+
+    def _check_finished( self, save_folder, urls ):
+        """check if which images are always downloaded, and remove them from download list.
+    
+        Args: None
+
+        Returns:
+    
+        Raises:
+        """
+    
+        if not os.path.isdir( save_folder ):
+            # print( "save folder is not exits", save_folder )
+            return urls
+
+        
+        shelve_file_name = os.path.join( save_folder, DATA_FILE_NAME )
+
+        # if True:
+        #     data_file_obj = shelve.open( shelve_file_name )
+        #     for i, url in enumerate( urls ):
+        #         if i < 78:
+        #             data_file_obj[url] = True
+
+        #     data_file_obj.close()
+        #     print( "write suceed!================" )
+            
+
+        # test if shelve is exist
+        try:
+            data_file_obj = shelve.open( shelve_file_name, "r" )
+        except:
+            answer = input( "Foler(%s) is exist. Are you sure to overwrite it?(y/n):" % os.path.abspath( save_folder ) )
+            if answer == "y":
+                return urls
+            else:
+                return []
+
+        # for i, url in enumerate( urls ):
+        #     print( "data_file_obj:", url, url in data_file_obj.keys() )
+        #     # 若文件已下载成功，则不下载
+
+        # for key in data_file_obj.keys():
+        #     print( "keys:", key, key in urls )
+#         return []
+
+        remove_table = []
+        for i, url in enumerate( urls ):
+            # 若文件已下载成功，则不下载
+            if url in data_file_obj.keys():
+                remove_table.append( i )
+
+        for index in sorted( remove_table, reverse=True ):
+            print( "delete ", index, urls[index] )
+            del urls[index]
+
+        data_file_obj.close( )
+        # print( "urls", urls )
+        # return []
+        return urls
+        
+    def parse( self, url ):
+        """parse e-hentai's gallery page, and get target images.
+    
+        Args:
+            url: hentai gallery url
+
+        Returns:
+            EHentaiGallery obj
+    
+        Raises:
+        """
+    
+        gallery = EHentaiGallery( self.session, "http://g.e-hentai.org/g/849492/eda7c42b07/" )
+        gallery.open( )
+
+        return ( gallery.get_name( ), gallery.get_all_image( ) )
+
+    
+    def download( self, url, save_folder ):
+        """download
+    
+        Args: 
+            url: #TODO
+            save_folder: #TODO
+
+        Returns:
+    
+        Raises:
+        """
+    
+        ( task_name, task_urls ) = self.parse( url )
+
+        save_folder = os.path.join( save_folder, task_name )
+
+        task_urls = self._check_finished( save_folder, task_urls )
+
+        self._start_download( task_urls, save_folder )
+    
+    def _start_download( self, page_list, save_folder ):
+        # open data file.
+        shelve_file_name = os.path.join( save_folder, DATA_FILE_NAME )
+        data_file_obj = shelve.open( shelve_file_name )
+
+        for page_url in page_list:
+            print( "start download page %s..." % page_url )
+            page = EHentaiPage( self.session, page_url )
+            page.open( )
+            page.save( save_folder )
+            print( "download page %s succeed." % page_url )
+
+            data_file_obj[page_url] = True
+
+            time.sleep( self.sleep_time )
+
+        data_file_obj.close()
+
+
+if __name__ == "__main__":
+    test_url = "http://g.e-hentai.org/g/849492/eda7c42b07/" 
+    manager = HentaiDownloadManager()
+
+    manager.download( test_url, "download" )

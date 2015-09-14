@@ -15,6 +15,9 @@ home_url = 'http://g.e-hentai.org/home.php'
 
 user_info_file = ".user.info"
 
+e_hentai_domain = ".e-hentai.org"
+ex_hentai_domain = ".exhentai.org"
+
 import random
 def genheader(custom = '', referer = ''):
     rrange = lambda a, b, c = 1: str(c == 1 and random.randrange(a, b) or float(random.randrange(a * c, b * c)) / c)
@@ -62,6 +65,8 @@ class HentaiSession(requests.Session):
                 self.cookies = pickle.load( f )
                 self.is_login = True
                 print( "Load cookies form file!" )
+                print( "cookies", self.cookies )
+                # print( "cookie", self.cookies["ipb_member_id"], self.cookies["ipb_pass_hash"] )
                 return True
         except:
             if not os.path.isfile( user_info_file ):
@@ -101,6 +106,10 @@ class HentaiSession(requests.Session):
                 self.cookies = post_obj.cookies
                 self.user_name = user_name
                 self.is_login = True
+
+                # copyt e-hentai's cookies to exhentai
+                for k,v in self.cookies.get_dict( e_hentai_domain ).items():
+                    self.cookies.set( k, v, domain=ex_hentai_domain )
 
                 self.save_to_file( )
                 return

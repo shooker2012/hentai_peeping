@@ -130,8 +130,8 @@ class HentaiPage:
 if __name__ == "__main__":
     from hentai_session import HentaiSession
 
-    url = "http://g.e-hentai.org/s/a9ce8f9499/849496-1"
-    # url = "http://g.e-hentai.org/s/939059d7f7/849492-1"
+    # url = "http://g.e-hentai.org/s/a9ce8f9499/849496-1"
+    url = "http://exhentai.org/g/852948/91d0a78b1c/"
 
     user_session = HentaiSession( )
     user_session.load_from_file( )

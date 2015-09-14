@@ -77,6 +77,7 @@ class HentaiGallery:
         try:
             while current_url:
                 # 下载html
+                print( "get current url", current_url )
                 tab = self.session.get( current_url ).text
                 # print( "tab htm:", tab )
 
@@ -96,6 +97,9 @@ class HentaiGallery:
                 # 获取下一页的url
                 current_url = get_next_tab_url( doc )
         except Exception as e:
+            with open( "failed.html", "w" ) as fo:
+                fo.write( tab )
+
             print( "Get current_url error.\n", e )
             self.enabled = False
         else:
@@ -119,5 +123,12 @@ class HentaiGallery:
 
 if __name__ == "__main__":
     pass
-    # gallery = HentaiGallery( requests.Session(), "http://g.e-hentai.org/g/849492/eda7c42b07/" )
-    # gallery.open( )
+    from hentai_session import HentaiSession
+
+    user_session = HentaiSession( )
+    user_session.load_from_file( )
+
+    url = "http://exhentai.org/g/852948/91d0a78b1c/"
+
+    gallery = HentaiGallery( user_session, url )
+    gallery.open( )
