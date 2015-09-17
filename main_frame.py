@@ -41,16 +41,18 @@ class MainFrame( Frame ):
         l = Label( self.group, text="图片数量" )
         l.grid( row=3, column=0 )
 
-        self.pic_num = Entry( self.group, width=3 )
+        self.pic_num_var = StringVar()
+        self.pic_num = Entry( self.group, width=3, state = "disabled", textvariable=self.pic_num_var )
+        # self.pic_num = Entry( self.group, width=3 )
         self.pic_num.grid( row=3, column=1, sticky=W, padx=5 )
 
-        self.parse_gallery = Button( self.group, text="分析相册", padx=10 )
+        self.parse_gallery = Button( self.group, text="分析相册", padx=10, command = self.start_parse )
         self.parse_gallery.grid( row=3, column=2, sticky=W+E+N+S, padx=5, pady=3 )
 
-        self.btn_download = Button( self.group, text="开始下载", padx=10 )
+        self.btn_download = Button( self.group, text="开始下载", padx=10, command = self.start_download )
         self.btn_download.grid( row=3, column=3, sticky=W+E+N+S, padx=5, pady=3 )
 
-        self.btn_menu = Button( self, text="选项", command=self.option)
+        self.btn_menu = Button( self, text="选项", command = lambda: self.pic_num_var.set( 1 ))
         self.btn_menu.grid( row=1, column=0 )
 
         l = Label( self, text="当前图片" )
@@ -63,8 +65,15 @@ class MainFrame( Frame ):
         self.lab_download = Label( self, text="尚未开始下载" )
         self.lab_download.grid( row=1, column=3 )
 
-    def option( self ):
-        self.prg_download.step( -25 )
+    def update_ui( self ):
+        pass
+
+    def start_parse( self ):
+        pass
+
+    def start_download( self ):
+        pass
+    
     
 
 
