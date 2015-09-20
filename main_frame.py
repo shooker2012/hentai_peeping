@@ -65,6 +65,12 @@ class MainFrame( Frame ):
         options_frame.grab_set()
         options_frame.set_callback( self.login_callback, self.logout_callback )
 
+        user_name = self.download_manager.get_user_name()
+        if user_name:
+            options_frame.update_ui( {"user_name" : user_name} )
+        else:
+            options_frame.update_ui( {} )
+
         self.wait_window( options_frame )
 
     def create_widgets( self ):
@@ -116,7 +122,7 @@ class MainFrame( Frame ):
 
         self.prg_download = ttk.Progressbar(self, orient='horizontal', mode='determinate')
         self.prg_download.grid( row=1, column=2 )
-        self.prg_download.step( 25 *2 )
+        # self.prg_download.step( 25 *2 )
 
         # self.lab_download = Label( self, text="尚未开始下载" )
         # self.lab_download.grid( row=1, column=3 )
@@ -160,14 +166,16 @@ class MainFrame( Frame ):
         self.save_config( )
 
     def login_callback( self, user_name, password ):
-        if self.user_session.get_cookies_from_internet( user_name, password ):
-            pass
-        else:
-            pass
+        return self.download_manager.login( user_name, password )
+        # if self.user_session.get_cookies_from_internet( user_name, password ):
+        #     pass
+        # else:
+        #     pass
         # print( "login", user_name, password )
 
-    def logout_callback( self, user_name, password ):
-        print( "logout", user_name, password )
+    def logout_callback( self ):
+        print( "logout" )
+        self.download_manager.logout( )
 
     def download_update_callback( self, cur, total ):
         self.prg_download["value"] = cur

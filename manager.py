@@ -90,8 +90,11 @@ class HentaiDownloadManager:
         return self.session.get_cookies_from_internet( user_name, password )
 
     def logout( self ):
-        self.session.cookies = None
+        self.session.cookies.clear( )
         self.session.clean_file( )
+
+    def get_user_name( self ):
+        return self.session.user_name
 
     def get_user_info( self ):
         return self.session.get_user_info( )

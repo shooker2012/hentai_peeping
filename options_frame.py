@@ -82,15 +82,21 @@ class OptionsFrame( Toplevel ):
 
     def login( self ):
         if not self.user_name_var.get() or not self.password_var.get():
-            tkinter.messagebox.showinfo( "登录失败", "请输入用户名/密码!" )
+            tkinter.messagebox.showinfo( "通知", "请输入用户名/密码!" )
             return
 
         if hasattr( self, 'login_callback' ):
-            self.login_callback( self.user_name_var.get(), self.password_var.get() )
+            if self.login_callback( self.user_name_var.get(), self.password_var.get() ):
+                tkinter.messagebox.showinfo( "通知", "登录成功!" )
+                self.update_ui( { "user_name" : self.user_name_var.get() } )
+            else:
+                tkinter.messagebox.showinfo( "通知", "登录失败!" )
 
     def logout( self ):
         if hasattr( self, 'logout_callback' ):
             self.logout_callback( )
+            tkinter.messagebox.showinfo( "通知", "退出登录成功！" )
+            self.update_ui( {} )
     
     def get_limits( self ):
         pass
