@@ -111,7 +111,10 @@ class HentaiGallery:
             #     print( "url %d: %s" % ( idx, url ) )
 
     def get_name( self ):
-        return self.title_gj
+        if self.title_gj:
+            return self.title_gj
+        else:
+            return self.title_gn
 
     def get_all_image( self ):
         if not self.is_enabled():

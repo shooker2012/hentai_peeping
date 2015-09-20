@@ -86,6 +86,10 @@ class HentaiSession(requests.Session):
             pickle.dump( self.user_name, f )
             pickle.dump( self.cookies, f )
 
+    def clean_file( self ):
+        if os.path.isfile( user_info_file ):
+            os.remove( user_info_file )
+
     def get_cookies_from_internet( self, user_name, password ):
         try:
             logindata = {
@@ -112,12 +116,13 @@ class HentaiSession(requests.Session):
                     self.cookies.set( k, v, domain=ex_hentai_domain )
 
                 self.save_to_file( )
-                return
+                return True
 
             print( "User(%s) login succeeed!" % user_name )
         except Exception as e:
             print( "User(%s) login failed!" % user_name )
             print( e )
+            return False
 
     def get_user_info( self ):
         if not self.is_login:
@@ -139,21 +144,6 @@ class HentaiSession(requests.Session):
             if reg_obj:
                 print( "Find the cost" )
                 print( reg_obj.group( 1 ), reg_obj.group( 2 ) )
-
-def down_pages( session, page_list, gallery_name, save_folder ):
-    gallery_name = os.path.join( save_folder, gallery_name )
-    print( "Save gallery:", gallery_name )
-
-    for i, page_url in enumerate( page_list ):
-        if i < 55:
-            continue
-
-        print( "start download page %s..." % page_url )
-        page = HentaiPage( session, page_url )
-        page.open( )
-        page.save( gallery_name )
-        print( "download page %s succeed." % page_url )
-        time.sleep( 0.5 )
 
 if __name__ == "__main__":
     import logging
@@ -199,9 +189,6 @@ if __name__ == "__main__":
     gallery = HentaiGallery( user_session, "http://g.e-hentai.org/g/849492/eda7c42b07/" )
     gallery.open( )
     print( "titles", gallery.title_gj, gallery.title_gn )
-
-    down_pages( user_session, gallery.get_all_image(), gallery.get_name(), "download" )
-
 
     os.stdout = None
 
