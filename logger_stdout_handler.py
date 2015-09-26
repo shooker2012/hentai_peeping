@@ -1,4 +1,5 @@
 import logging
+import sys
 
 class LoggerStdOutHandler:
     """
@@ -19,6 +20,7 @@ class LoggerStdOutHandler:
     
         self.logger = logger
         self.log_level = log_level
+        self.encoding = "utf-8"
     
     def write( self, buffer ):
         """write
@@ -32,7 +34,8 @@ class LoggerStdOutHandler:
         """
     
         for line in buffer.rstrip().splitlines():
-            self.logger.log(self.log_level, line.rstrip())
+            line = line.rstrip().encode( 'gbk', "ignore" ).decode( 'gbk', "ignore" )
+            self.logger.log(self.log_level, line)
 
     def flush( self ):
         """flush
@@ -46,3 +49,16 @@ class LoggerStdOutHandler:
     
         for handler in self.logger.handlers:
             handler.flush( )
+
+    def errors( self ):
+        """error
+    
+        Args: None
+
+        Returns:
+    
+        Raises:
+        """
+    
+        pass
+    

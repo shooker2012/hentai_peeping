@@ -1,7 +1,9 @@
 import os
+import sys
 import pickle
 
 from tkinter import *
+import tkinter
 import tkinter.ttk as ttk
 
 from options_frame import OptionsFrame
@@ -100,6 +102,9 @@ class MainFrame( Frame ):
         self.save_folder = Entry( self.group, textvariable=self.save_folder_var )
         self.save_folder.grid( row=2, column=1, columnspan=2, sticky=W+E+N+S, padx=5, pady=3 )
 
+        self.btn_open_dir = Button( self.group, text="打开目录", padx=10, command = self.open_dir )
+        self.btn_open_dir.grid( row=2, column=3, sticky=W+E+N+S, padx=5, pady=3 )
+
         l = Label( self.group, text="图片数量" )
         l.grid( row=3, column=0 )
 
@@ -109,6 +114,8 @@ class MainFrame( Frame ):
 
         self.parse_gallery = Button( self.group, text="分析相册", padx=10, command = self.start_parse )
         self.parse_gallery.grid( row=3, column=2, sticky=W+E+N+S, padx=5, pady=3 )
+
+        self.addr_var.trace( "w", lambda name, index, mode: self.parse_gallery.config( state="normal" ) )
 
         self.btn_download = Button( self.group, text="开始下载", padx=10, command = self.start_download )
         self.btn_download.grid( row=3, column=3, sticky=W+E+N+S, padx=5, pady=3 )
@@ -136,14 +143,15 @@ class MainFrame( Frame ):
             self.open_options( )
             return
 
-        print( "update_ui", self.download_manager.task_name )
+        # print( "update_ui", self.download_manager.task_name )
         if self.download_manager.task_name:
             self.gallery_name_var.set( self.download_manager.task_name )
             self.btn_download.config( state="normal" )
             self.parse_gallery.config( state="disabled" )
 
             ( cur, total ) = self.download_manager.get_progress( )
-            self.pic_num_var.set( total )
+            # print( "============total", total, self.download_manager.task_status_tab )
+            self.pic_num_var.set( len(self.download_manager.task_urls) )
             if total > 0:
                 self.prg_download["value"] = cur
                 self.prg_download["maximum"] = total
@@ -161,9 +169,18 @@ class MainFrame( Frame ):
         self.update_ui( )
 
     def start_download( self ):
+        self.btn_download.config( state="disabled" )
         save_folder = os.path.join( self.save_folder_var.get( ), self.gallery_name_var.get( ) )
         self.download_manager.download( save_folder )
         self.save_config( )
+
+    def open_dir( self ):
+        import platform
+        if os.path.isdir( self.save_folder_var.get() ):
+            if platform.system( ) == "Windows":
+                import subprocess
+                subprocess.Popen( r'explorer /select,"%s"' % self.save_folder_var.get() )
+    
 
     def login_callback( self, user_name, password ):
         return self.download_manager.login( user_name, password )
@@ -174,7 +191,6 @@ class MainFrame( Frame ):
         # print( "login", user_name, password )
 
     def logout_callback( self ):
-        print( "logout" )
         self.download_manager.logout( )
 
     def download_update_callback( self, cur, total ):
@@ -183,9 +199,35 @@ class MainFrame( Frame ):
 
 
     def download_finish_callback( self ):
-        pass
+        self.btn_download.config( state="normal" )
+        tkinter.messagebox.showinfo( "通知", "下载完成！" )
     
 
 if __name__ == "__main__":
+    import logging
+    # 创建一个logger  
+    logger = logging.getLogger()  
+    logger.setLevel(logging.DEBUG)  
+      
+    # 创建一个handler，用于写入日志文件  
+    fh = logging.FileHandler('log.txt', "w", "utf-8")  
+    fh.setLevel(logging.DEBUG)  
+
+    # 创建一个stream
+    ch = logging.StreamHandler( sys.stdout )
+    ch.setLevel(logging.DEBUG)
+      
+    # 定义handler的输出格式  
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')  
+    fh.setFormatter(formatter)  
+      
+    # 给logger添加handler  
+    logger.addHandler(fh)  
+    logger.addHandler(ch)
+      
+    import logger_stdout_handler
+    # 将stdout的输入重定向到StreamToLogger对象上
+    sys.stdout = logger_stdout_handler.LoggerStdOutHandler( logger, logging.DEBUG )
+
     app = MainFrame()
     app.mainloop()

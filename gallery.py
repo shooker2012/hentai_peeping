@@ -105,10 +105,9 @@ class HentaiGallery:
         else:
             self.enabled = True
 
-            print( "Get all image urls:" )
-            print( self.enabled )
-            # for idx, url in enumerate( self.img_urls ):
-            #     print( "url %d: %s" % ( idx, url ) )
+            print( "Get all image urls:", len( self.img_urls ) )
+            for idx, url in enumerate( self.img_urls ):
+                print( "url %d: %s" % ( idx, url ) )
 
     def get_name( self ):
         if self.title_gj:

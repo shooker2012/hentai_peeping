@@ -3,6 +3,8 @@ import os
 import requests
 import json
 
+from tkinter import *
+
 from hentai_session import HentaiSession
 from gallery import HentaiGallery
 from page import HentaiPage
@@ -64,8 +66,8 @@ class HentaiDownloadManager:
             task_status_tab = json.load( file_obj )
         # except requests.exceptions.Timeout as e:
         except:
-            answer = input( "Foler(%s) is exist. Are you sure to overwrite it?(y/n):" % os.path.abspath( save_folder ) )
-            if answer == "y":
+            answer = messagebox.askyesno( "", "文件夹(%s)已经存在。是否覆盖?" % os.path.abspath( save_folder ) )
+            if answer:
                 return urls
             else:
                 return []
@@ -117,7 +119,7 @@ class HentaiDownloadManager:
         self.task_name = gallery.get_name( )
         self.task_urls = gallery.get_all_image( )
 
-        print( "111", self.task_name, self.task_urls )
+        # print( "111", self.task_name, self.task_urls )
 
         # return ( gallery.get_name( ), gallery.get_all_image( ) )
 
@@ -189,7 +191,10 @@ class HentaiDownloadManager:
                 time.sleep( sleep_time )
             except requests.exceptions.Timeout as e:
                 update_callback( page_url, False )
-                print( "[HentaiManager]download page %s failed!" % page_url )
+                print( "[HentaiManager]download page %s failed!Time out." % page_url )
+            except Exception as e:
+                update_callback( page_url, False )
+                print( "[HentaiManager]download page %s failed!" % page_url, e )
 
 
         # Enter critical section
